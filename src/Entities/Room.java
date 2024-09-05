@@ -1,5 +1,7 @@
 package Entities;
 
+import Exceptions.RoomAlreadyExistException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +45,36 @@ public class Room {
     public void removeReservation(Reservation reservation) {reservations.remove(reservation);}
 
     public static Room findById(int id) {
-        return rooms.stream()
-                .filter(room -> room.getId() == id)
-                .findFirst()
-                .orElse(null);
+        for(Room room: rooms){
+            if(room.getId() == id){
+                return room;
+            }
+        }
+        return null;
     }
-
     public static List<Room> findAll() {
         return new ArrayList<>(rooms);
     }
 
-    public static void add(Room room) {
-        int newId = rooms.isEmpty() ? 1 : rooms.stream().mapToInt(Room::getId).max().orElse(0) + 1;
+    public static void add(Room room) throws RoomAlreadyExistException {
+        for (Room r : rooms) {
+            if (r.getRoomNumber().equals(room.getRoomNumber()) && r.getCapacity() == room.getCapacity()) {
+                throw new RoomAlreadyExistException("A room with this number and capacity already exists.");
+            }
+        }
+        int newId = 1;
+        if (!rooms.isEmpty()) {
+            for (Room r : rooms) {
+                if (r.getId() >= newId) {
+                    newId = r.getId() + 1;
+                }
+            }
+        }
         room.setId(newId);
         rooms.add(room);
     }
+
+
     public boolean isRoomAvailable(LocalDate startDate, LocalDate endDate, int reservationId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() != reservationId)

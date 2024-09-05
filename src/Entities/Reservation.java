@@ -52,10 +52,12 @@ public class Reservation {
     public void setCheckOutDate(LocalDate checkOutDate) {this.checkOutDate = checkOutDate;}
 
     public static Reservation findById(int id) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getId() == id)
-                .findFirst()
-                .orElse(null);
+        for (Reservation reservation: reservations){
+            if(reservation.getId() == id){
+                return reservation;
+            }
+        }
+        return null;
     }
 
     public static List<Reservation> findAll() {
