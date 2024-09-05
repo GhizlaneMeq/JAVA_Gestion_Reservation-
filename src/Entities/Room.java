@@ -75,13 +75,16 @@ public class Room {
     }
 
 
-    public boolean isRoomAvailable(LocalDate startDate, LocalDate endDate, int reservationId) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getId() != reservationId)
-                .noneMatch(reservation ->
-                        !(endDate.isBefore(reservation.getCheckInDate())
-                                || startDate.isAfter(reservation.getCheckOutDate()))
-                );
+    public boolean isRoomAvailable(LocalDate checkInDate, LocalDate checkOutDate, int ReservationId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getId() == ReservationId) {
+                continue;
+            }
+            if (!(checkOutDate.isBefore(reservation.getCheckInDate()) || checkInDate.isAfter(reservation.getCheckOutDate()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
